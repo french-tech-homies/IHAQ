@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	. "github.com/french-tech-homies/ihaq/message"
+	. "github.com/french-tech-homies/ihaq/pkg/message"
 
 	"github.com/go-redis/redis/v7"
 )
