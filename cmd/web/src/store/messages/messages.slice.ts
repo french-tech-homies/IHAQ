@@ -17,7 +17,7 @@ interface AuthorsState {
 const initialState: AuthorsState = { byId: {}, allIds: [] };
 
 const messagesSlice = createSlice({
-  name: 'authors',
+  name: 'messages',
   initialState,
   reducers: {
     addMessage(state, action: PayloadAction<Message>) {
