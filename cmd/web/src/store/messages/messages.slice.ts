@@ -46,8 +46,14 @@ export const fetchMessages = (): AppThunk<Promise<void>, ReturnType<typeof addMe
   const messages = await messageService.getMessages();
   const parsedMessages = toMessage(messages);
   const authors = parsedMessages.map(message => ({ id: message.authorId, name: message.authorId }));
-  dispatch(addMessages(parsedMessages));
   dispatch(addAuthors(authors));
+  dispatch(addMessages(parsedMessages));
+};
+
+export const postMessage = (message : Message): AppThunk<Promise<void>, ReturnType<typeof addMessage>> => async dispatch => {
+  const newMessage = await messageService.postMessage({author:message.authorId, message:message.text, id:message.id, likes:0});
+  const parsedMessage = toMessage(newMessage);
+  dispatch(addMessage(parsedMessage));
 };
 
 export const { addMessage, addMessages } = messagesSlice.actions;

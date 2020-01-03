@@ -1,3 +1,6 @@
+// Selector are memorized function
+// Helper functions around GET
+// Examples : Having filtered list of author ID
 import { AppState } from '../rootReducer';
 import { createSelector } from '@reduxjs/toolkit';
 import { makeGetAuthor } from '../authors';

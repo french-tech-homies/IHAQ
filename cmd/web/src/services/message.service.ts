@@ -17,6 +17,11 @@ export class MessageService {
     const { data } = await this.client.get<IMessage[]>('/messages');
     return data;
   }
+
+  async postMessage(message:IMessage) {
+    const { data } = await this.client.post<IMessage>('/message', message);
+    return data;
+  }
 }
 
 export const messageService = new MessageService();

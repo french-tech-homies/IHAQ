@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function AlignItemsList() {
   const classes = useStyles();
   const dispatch = useDispatch<AppDispatch>();
+  // Messages is updated everytime the store is updated
   const messages = useSelector(getMessagesWithUser);
   useEffect(() => {
     dispatch(fetchMessages());
