@@ -16,6 +16,8 @@ interface MessagesState {
 }
 const initialState: MessagesState = { byId: {}, allIds: [] };
 
+// Slices - Reducers
+// Internal at Redux - Sync call - Update redux state
 const messagesSlice = createSlice({
   name: 'messages',
   initialState,
@@ -42,9 +44,15 @@ const toMessage = morphism(
     text: ({ message }) => message
   })
 );
+
+// Async Actions - Public - Call to external API
+// Return type are the SYNC functions to call after the ASYNC is completed
 export const fetchMessages = (): AppThunk<Promise<void>, ReturnType<typeof addMessages | typeof addAuthors>> => async dispatch => {
+  // Call the async call to API
   const messages = await messageService.getMessages();
+  // Morsphism
   const parsedMessages = toMessage(messages);
+  // Updating the store via SYNC call
   const authors = parsedMessages.map(message => ({ id: message.authorId, name: message.authorId }));
   dispatch(addAuthors(authors));
   dispatch(addMessages(parsedMessages));
