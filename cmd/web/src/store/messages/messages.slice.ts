@@ -10,11 +10,11 @@ interface Message {
   authorId: string;
 }
 
-interface AuthorsState {
+interface MessagesState {
   byId: Record<string, Message>;
   allIds: string[];
 }
-const initialState: AuthorsState = { byId: {}, allIds: [] };
+const initialState: MessagesState = { byId: {}, allIds: [] };
 
 const messagesSlice = createSlice({
   name: 'messages',
