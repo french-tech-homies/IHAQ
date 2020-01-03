@@ -8,7 +8,7 @@ import (
 	"log"
 	"net/http"
 
-	. "github.com/french-tech-homies/ihaq/message"
+	. "github.com/french-tech-homies/ihaq/pkg/message"
 	uuid "github.com/satori/go.uuid"
 )
 
