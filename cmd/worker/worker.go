@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 
 	. "github.com/french-tech-homies/ihaq/pkg/message"
@@ -9,13 +10,26 @@ import (
 	"github.com/go-redis/redis/v7"
 )
 
-var client *redis.Client
+var (
+	client              *redis.Client
+	redisServerName     string
+	redisServerPort     string
+	redisServerPassword string
+	redisServerDB       int
+)
 
 func main() {
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+	flag.StringVar(&redisServerName, "redis-server-name", "localhost", "redis server name")
+	flag.StringVar(&redisServerPort, "redis-server-port", "6379", "redis server port")
+	flag.StringVar(&redisServerPassword, "redis-server-password", "", "redis server password")
+	flag.IntVar(&redisServerDB, "redis-server-db", 0, "redis server db")
+
+	flag.Parse()
+
+	client = redis.NewClient(&redis.Options{
+		Addr:     redisServerName + ":" + redisServerPort,
+		Password: redisServerPassword, // no password set
+		DB:       redisServerDB,       // use default DB
 	})
 
 	pong, err := client.Ping().Result()

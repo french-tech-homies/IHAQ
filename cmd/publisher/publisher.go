@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,13 +10,29 @@ import (
 	"github.com/gorilla/handlers"
 )
 
-var client *redis.Client
+var (
+	client              *redis.Client
+	redisServerName     string
+	redisServerPort     string
+	redisServerPassword string
+	redisServerDB       int
+	apiPort             string
+)
 
 func main() {
+	flag.StringVar(&redisServerName, "redis-server-name", "localhost", "redis server name")
+	flag.StringVar(&redisServerPort, "redis-server-port", "6379", "redis server port")
+	flag.StringVar(&redisServerPassword, "redis-server-password", "", "redis server password")
+	flag.IntVar(&redisServerDB, "redis-server-db", 0, "redis server db")
+
+	flag.StringVar(&apiPort, "api-server-port", "8080", "API server port")
+
+	flag.Parse()
+
 	client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     redisServerName + ":" + redisServerPort,
+		Password: redisServerPassword, // no password set
+		DB:       redisServerDB,       // use default DB
 	})
 
 	pong, err := client.Ping().Result()
@@ -33,5 +50,5 @@ func main() {
 		handlers.AllowCredentials(),
 	)
 
-	log.Fatal(http.ListenAndServe(":8080", cors(router)))
+	log.Fatal(http.ListenAndServe(":"+apiPort, cors(router)))
 }
