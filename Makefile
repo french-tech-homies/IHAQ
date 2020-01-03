@@ -21,12 +21,15 @@ SANITIZED_NAME ?= ${SANITIZED_BUILD_NUMBER}
 
 DEV_ENV_IMAGE := quay.io/deis/go-dev:latest
 DEV_ENV_WORK_DIR := /go/src/github.com/french-tech-homies/ihaq
-DEV_ENV_PREFIX := docker run --rm -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
+DEV_ENV_PREFIX := docker run --rm -e GO111MODULE=on -v ${CURDIR}:${DEV_ENV_WORK_DIR} -w ${DEV_ENV_WORK_DIR}
 DEV_ENV_DOCKER_MOUNT_PREFIX := ${DEV_ENV_PREFIX} -v /var/run/docker.sock:/var/run/docker.sock
 DEV_ENV_CMD := ${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE}
 
 IHAQ_GOPATH = github.com/french-tech-homies/ihaq
 IHAQ_VERSION ?= ${VERSION}
+
+MUTABLE_VERSION ?= production
+
 ###############################################################################
 # Go build options
 ###############################################################################
@@ -44,6 +47,10 @@ endif
 
 GO_BUILD_OPTIONS = -buildmode=${GO_BUILD_MODE} -ldflags "-X ${IHAQ_GOPATH}/log.BuildVersion=${VERSION} -extldflags=-Wl,-z,now,-z,relro"
 
+###############################################################################
+# COMMON
+###############################################################################
+
 .PHONY: info-ihaq
 info: info-ihaq
 	@echo
@@ -55,82 +62,118 @@ info: info-ihaq
 	@echo "ihaq-client:			$(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION)"
 	@echo
 
+registry-login: registry-login
+	@docker login -u ${FTH_REGISTRY_USERNAME} -p ${FTH_REGISTRY_PASSWORD}
+
+# Run go fmt against code
+.PHONY: fmt
+fmt:
+	go fmt ./pkg/... ./cmd/...
+
+.PHONY: fmt-with-container
+fmt-with-container:
+	$(DEV_ENV_CMD) go fmt ./pkg/... ./cmd/...
+
+# Run go vet against code
+.PHONY: vet
+vet:
+	go vet ./pkg/... ./cmd/...
+
+# .PHONY: vet-with-container
+vet-with-container:
+	$(DEV_ENV_CMD) go vet ./pkg/... ./cmd/...
+
+# Generate code
+.PHONY: generate
+generate:
+	go generate ./pkg/... ./cmd/...
+
+# Generate code
+.PHONY: generate-with-container
+generate-with-container:
+	$(DEV_ENV_CMD) go generate ./pkg/... ./cmd/...
+
+
 # .PHONY: test-queue
 # test: generate fmt vet
 # 	go test ./pkg/... ./cmd/... -coverprofile cover.out | tee uts.txt
 
-# .PHONY: test-queue-with-container
-# test-queue-with-container: generate-queue-with-container fmt-queue-with-container vet-queue-with-container
-# 	$(DEV_ENV_CMD) go get github.com/onsi/ginkgo/ginkgo
-# 	$(DEV_ENV_CMD) ginkgo -r -trace ./cmd ./pkg
-# 	$(DEV_ENV_CMD) go test ./pkg/... ./cmd/... -coverprofile cover.out | tee uts.txt
+# Building
+build-base-ubuntu-image:
+	docker build -t base-ubuntu:v0.0.1 images/common/base
+
+build: build-publisher-binaries build-worker-binaries
+
+build-images: build-base-ubuntu-image build-publisher-image build-worker-image build-client-image
+build-images-with-container: build-base-ubuntu-image build-publisher-image-with-container build-worker-image-with-container
+push-images: push-publisher-image push-worker-image push-client-image
+push-mutable-images: push-mutable-publisher-image push-mutable-worker-image push-mutable-client-image
+
+###############################################################################
+# PUBLISHER
+###############################################################################
 
 .PHONY: build-publisher-binaries
-build-publisher-binaries:
+build-publisher-binaries: fmt vet generate
 	go build $(GO_BUILD_OPTIONS) -o $(BINARY_DEST_DIR)/ihaq-publisher $(IHAQ_GOPATH)/cmd/publisher
+
+.PHONY: build-publisher-binaries-with-container
+build-publisher-binaries-with-container: 
+	$(DEV_ENV_CMD) make build-publisher-binaries
+
+.PHONY: build-publisher-image
+build-publisher-image: build-base-ubuntu-image
+	cp bin/ihaq-publisher images/publisher/ihaq-publisher
+	docker build -t $(FTH_REGISTRY)/ihaq-publisher:$(IHAQ_VERSION) images/publisher
+
+.PHONY: push-publisher-image
+push-publisher-image: registry-login
+	docker push $(FTH_REGISTRY)/ihaq-publisher:$(IHAQ_VERSION)
+
+.PHONY: push-mutable-publisher-image
+push-mutable-publisher-image: registry-login
+	docker tag $(FTH_REGISTRY)/ihaq-publisher:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-publisher:$(MUTABLE_VERSION)
+	docker push $(FTH_REGISTRY)/ihaq-publisher:$(MUTABLE_VERSION)
+
+###############################################################################
+# WORKER
+###############################################################################
 
 .PHONY: build-worker-binaries
 build-worker-binaries: 
 	go build $(GO_BUILD_OPTIONS) -o $(BINARY_DEST_DIR)/ihaq-worker $(IHAQ_GOPATH)/cmd/worker
 
-.PHONY: build-publisher-binaries-with-container
-build-publisher-binaries-with-container: 
-	$(DEV_ENV_CMD) GO111MODULE=on go mod vendor
-	$(DEV_ENV_CMD) make build-publisher-binaries
+.PHONY: build-worker-binaries-with-container
+build-worker-binaries-with-container: 
+	$(DEV_ENV_CMD) make build-worker-binaries
 
-# .PHONY: build-images
-# build-images: 
-# 	cp bin/aroinfra images/aroinfra
-# 	docker build -t $(OSA_REGISTRY)/$(ORG)/aroinfra:$(AROINFRA_VERSION) images/aroinfra
+.PHONY: build-worker-image
+build-worker-image: build-base-ubuntu-image
+	cp bin/ihaq-publisher images/worker/ihaq-worker
+	docker build -t $(FTH_REGISTRY)/ihaq-worker:$(IHAQ_VERSION) images/worker
 
-# .PHONY: push-images
-# push-images: 
-# 	docker push $(OSA_REGISTRY)/$(ORG)/aroinfra:$(AROINFRA_VERSION)
+.PHONY: push-worker-image
+push-worker-image: registry-login
+	docker push $(FTH_REGISTRY)/ihaq-worker:$(IHAQ_VERSION)
 
-# .PHONY: push-mutable-images
-# push-mutable-images: 
-# 	docker tag $(OSA_REGISTRY)/$(ORG)/aroinfra:$(AROINFRA_VERSION) $(OSA_REGISTRY)/$(ORG)/aroinfra:$(MUTABLE_VERSION)
-# 	docker push $(OSA_REGISTRY)/$(ORG)/aroinfra:$(MUTABLE_VERSION)
+.PHONY: push-mutable-worker-image
+push-mutable-worker-image: registry-login
+	docker tag $(FTH_REGISTRY)/ihaq-worker:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-worker:$(MUTABLE_VERSION)
+	docker push $(FTH_REGISTRY)/ihaq-worker:$(MUTABLE_VERSION)
 
-# registry-login:
-# 	@docker login ${OSA_REGISTRY} -u ${OSA_REGISTRY_USERNAME} -p ${OSA_REGISTRY_PASSWORD}
+###############################################################################
+# CLIENT
+###############################################################################
 
-# .PHONY: publish-coverage-with-container
-# publish-coverage-with-container:
-# 	${DEV_ENV_PREFIX} ${DEV_ENV_IMAGE} bash -c "go get github.com/jstemmer/go-junit-report && \
-#     go get github.com/axw/gocov/gocov && \
-#     go get github.com/AlekSi/gocov-xml && \
-#     go get -u gopkg.in/matm/v1/gocov-html && \
-#     go-junit-report < uts.txt > report.xml && \
-#     gocov convert cover.out > coverage.json && \
-#     gocov-xml < coverage.json > coverage.xml && \
-#     mkdir coverage && \
-#     gocov-html < coverage.json > coverage/index.html"
+.PHONY: build-client-image
+build-client-image:
+	docker build -f images/client/Dockerfile -t $(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION) cmd/web
 
-# # Run go fmt against code
-# .PHONY: fmt
-# fmt:
-# 	go fmt ./pkg/... ./cmd/...
+.PHONY: push-client-image
+push-client-image: registry-login
+	docker push $(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION)
 
-# .PHONY: fmt-with-container
-# fmt-with-container:
-# 	$(DEV_ENV_CMD) go fmt ./pkg/... ./cmd/...
-
-# # Run go vet against code
-# .PHONY: vet
-# vet:
-# 	go vet ./pkg/... ./cmd/...
-
-# .PHONY: vet-with-container
-# vet-with-container:
-# 	$(DEV_ENV_CMD) go vet ./pkg/... ./cmd/...
-
-# # Generate code
-# .PHONY: generate
-# generate:
-# 	go generate ./pkg/... ./cmd/...
-
-# # Generate code
-# .PHONY: generate-with-container
-# generate-with-container:
-# 	$(DEV_ENV_CMD) go generate ./pkg/... ./cmd/...
+.PHONY: push-mutable-client-image
+push-mutable-client-image: registry-login
+	docker tag $(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-client:$(MUTABLE_VERSION)
+	docker push $(FTH_REGISTRY)/ihaq-client:$(MUTABLE_VERSION)
