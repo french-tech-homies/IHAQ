@@ -6,9 +6,11 @@ import IconButton from '@material-ui/core/IconButton';
 import SendIcon from '@material-ui/icons/Send';
 
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from './store/store';
+import { postMessage } from './store/messages';
 
 const API_URL = 'http://localhost:8080';
-
 
 interface IQuestion {
     message: string;
@@ -39,6 +41,8 @@ export default function CustomizedInputBase() {
   const initialState = {author:"Unknow", message:""}
   const [question, setQuestion] = useState<IQuestion>(initialState);
 
+  const dispatch = useDispatch<AppDispatch>();
+
   const handleChange = (event: any) => {
     const theQuestion : IQuestion = {author:"Unknow", message:event.target.value}
     setQuestion(theQuestion)
@@ -48,13 +52,8 @@ export default function CustomizedInputBase() {
     e.preventDefault();
     console.log("Clicked")
     console.log("msg: ", question)
-    const url = `${API_URL}/message`;
-    axios.post(url, question).then(response => response.data)
-    .then((data) => {
-        console.log("Data posted: ", data)
-        // const theQuestion : IQuestion = 
-        setQuestion(initialState)
-    })
+    dispatch(postMessage({text:question.message, authorId:question.author, id:""}))
+    setQuestion(initialState)
   }
 
 
