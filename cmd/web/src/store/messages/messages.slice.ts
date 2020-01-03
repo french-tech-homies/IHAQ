@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { AppThunk } from '../store';
 import { messageService, IMessage } from '../../services/message.service';
 import { morphism, createSchema } from 'morphism';
+import { addAuthors, addAuthor } from '../authors';
 
 interface Message {
   id: string;
@@ -41,9 +42,12 @@ const toMessage = morphism(
     text: ({ message }) => message
   })
 );
-export const fetchMessages = (): AppThunk<Promise<void>, ReturnType<typeof addMessages>> => async dispatch => {
+export const fetchMessages = (): AppThunk<Promise<void>, ReturnType<typeof addMessages | typeof addAuthors>> => async dispatch => {
   const messages = await messageService.getMessages();
-  dispatch(addMessages(toMessage(messages)));
+  const parsedMessages = toMessage(messages);
+  const authors = parsedMessages.map(message => ({ id: message.authorId, name: message.authorId }));
+  dispatch(addMessages(parsedMessages));
+  dispatch(addAuthors(authors));
 };
 
 export const { addMessage, addMessages } = messagesSlice.actions;
