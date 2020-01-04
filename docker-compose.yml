@@ -1,0 +1,24 @@
+version: '3'
+services:
+  web:
+    build: images/client
+    ports:
+    - "12345:3000"
+    volumes:
+    - ./cmd/web:/ihaq-client
+    links:
+    - redis
+  api:
+    build: images/publisher
+    ports:
+    - "8080:8080"
+    links:
+    - redis
+    command: /ihaq-publisher --redis-server-name=redis
+  worker:
+      build: images/worker
+      links:
+      - redis
+      command: /ihaq-worker --redis-server-name=redis
+  redis:
+    image: redis

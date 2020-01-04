@@ -109,6 +109,12 @@ build-images-with-container: build-base-ubuntu-image build-publisher-image-with-
 push-images: push-publisher-image push-worker-image push-client-image
 push-mutable-images: push-mutable-publisher-image push-mutable-worker-image push-mutable-client-image
 
+.PHONY: run-locally
+run-locally: build-base-ubuntu-image build-publisher-binaries-with-container build-worker-binaries-with-container
+	cp bin/ihaq-publisher images/publisher/ihaq-publisher
+	cp bin/ihaq-worker images/publisher/ihaq-worker
+	docker-compose build && docker-compose up --force-recreate
+
 ###############################################################################
 # PUBLISHER
 ###############################################################################
