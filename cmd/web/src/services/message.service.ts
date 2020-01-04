@@ -15,7 +15,10 @@ export class MessageService {
   }
   async getMessages() {
     const { data } = await this.client.get<IMessage[]>('/messages');
-    return data;
+    if (data) {
+      return data;
+    }
+    return [];
   }
 
   async postMessage(message:IMessage) {
