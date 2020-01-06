@@ -12,6 +12,9 @@ import { fetchMessages, getMessagesWithUser } from './store/messages';
 
 import {socket} from './App'
 
+// @ts-ignore
+import { Rings as Identicon } from 'react-identicon-variety-pack'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -45,7 +48,8 @@ export default function AlignItemsList() {
         ? messages.map(item => (
             <ListItem alignItems="flex-start" key={item.message.id}>
               <ListItemAvatar>
-                <Avatar alt={item.author.name} src="/static/images/avatar/1.jpg" />
+                <Avatar alt={item.author.name} ><Identicon seed={item.author.name} size={64} /></Avatar>
+                
               </ListItemAvatar>
               <ListItemText
                 primary={item.message.text}
