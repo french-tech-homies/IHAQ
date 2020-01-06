@@ -10,6 +10,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from './store/store';
 import { fetchMessages, getMessagesWithUser } from './store/messages';
 
+import {socket} from './App'
+
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -31,6 +33,12 @@ export default function AlignItemsList() {
     dispatch(fetchMessages());
   }, [dispatch]);
 
+  socket.onmessage = function (evt) {
+    // Dirty Hack around web socket
+    console.log(evt)
+    dispatch(fetchMessages());
+  };
+
   return (
     <List className={classes.root}>
       {messages && messages.length > 0
@@ -44,6 +52,7 @@ export default function AlignItemsList() {
                 secondary={
                   <React.Fragment>
                     <Typography component="span" variant="body2" className={classes.inline} color="textPrimary"></Typography>
+                    {/* {' — by ' + item.author.name + ' - at '+item.message.timestamp} */}
                     {' — by ' + item.author.name}
                   </React.Fragment>
                 }

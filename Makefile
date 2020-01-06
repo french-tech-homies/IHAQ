@@ -120,7 +120,7 @@ run-locally: build-base-ubuntu-image build-publisher-binaries-with-container bui
 ###############################################################################
 
 .PHONY: build-publisher-binaries
-build-publisher-binaries: fmt vet generate
+build-publisher-binaries:
 	go build $(GO_BUILD_OPTIONS) -o $(BINARY_DEST_DIR)/ihaq-publisher $(IHAQ_GOPATH)/cmd/publisher
 
 .PHONY: build-publisher-binaries-with-container

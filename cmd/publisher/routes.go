@@ -4,6 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+
+	logger "github.com/french-tech-homies/ihaq/pkg/log"
 )
 
 // Route Infos
@@ -25,7 +27,7 @@ func NewRouter() *mux.Router {
 		var handler http.Handler
 
 		handler = route.HandlerFunc
-		handler = Logger(handler, route.Name)
+		handler = logger.Logger(handler, route.Name)
 
 		router.
 			Methods(route.Method).
@@ -55,5 +57,11 @@ var routes = Routes{
 		"POST",
 		"/message",
 		postMessage,
+	},
+	Route{
+		"socket",
+		"GET",
+		"/ws",
+		wsEndpoint,
 	},
 }

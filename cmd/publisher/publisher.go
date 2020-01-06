@@ -12,6 +12,7 @@ import (
 
 var (
 	client              *redis.Client
+	hub                 *Hub
 	redisServerName     string
 	redisServerPort     string
 	redisServerPassword string
@@ -28,6 +29,9 @@ func main() {
 	flag.StringVar(&apiPort, "api-server-port", "8080", "API server port")
 
 	flag.Parse()
+
+	hub = newHub()
+	go hub.run()
 
 	client = redis.NewClient(&redis.Options{
 		Addr:     redisServerName + ":" + redisServerPort,

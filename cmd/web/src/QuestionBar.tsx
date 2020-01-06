@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from './store/store';
 import { postMessage } from './store/messages';
 
-const API_URL = 'http://localhost:8080';
+import {socket} from './App'
 
 interface IQuestion {
     message: string;
@@ -52,7 +52,7 @@ export default function CustomizedInputBase() {
     e.preventDefault();
     console.log("Clicked")
     console.log("msg: ", question)
-    dispatch(postMessage({text:question.message, authorId:question.author, id:""}))
+    dispatch(postMessage({text:question.message, authorId:question.author, id:"", timestamp:Date.now()}))
     setQuestion(initialState)
   }
 

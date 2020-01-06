@@ -5,7 +5,8 @@ export interface IMessage {
   id: string;
   author: string;
   message: string;
-  likes: number;
+  likes?: number;
+  timestamp: number;
 }
 
 export class MessageService {
