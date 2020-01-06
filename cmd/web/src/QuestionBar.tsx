@@ -5,12 +5,11 @@ import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SendIcon from '@material-ui/icons/Send';
 
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from './store/store';
 import { postMessage } from './store/messages';
 
-import {socket} from './App'
+import {userService} from './services/users.service'
 
 interface IQuestion {
     message: string;
@@ -38,13 +37,13 @@ const useStyles = makeStyles(theme => ({
 
 export default function CustomizedInputBase() {
   const classes = useStyles();
-  const initialState = {author:"Unknow", message:""}
+  const initialState = {author:userService.getUsername(), message:""}
   const [question, setQuestion] = useState<IQuestion>(initialState);
 
   const dispatch = useDispatch<AppDispatch>();
 
   const handleChange = (event: any) => {
-    const theQuestion : IQuestion = {author:"Unknow", message:event.target.value}
+    const theQuestion : IQuestion = {author:userService.getUsername(), message:event.target.value}
     setQuestion(theQuestion)
   }
 
