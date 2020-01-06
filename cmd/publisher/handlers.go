@@ -7,13 +7,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	. "github.com/french-tech-homies/ihaq/pkg/message"
 	uuid "github.com/satori/go.uuid"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Welcome!")
+	fmt.Fprintln(w, "IHAQ API!")
 }
 
 func postMessage(w http.ResponseWriter, r *http.Request) {
@@ -39,6 +40,7 @@ func postMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	message.Id = uuid.NewV4().String()
+	message.Timestamp = time.Now().Unix()
 
 	if err != nil {
 		log.Println("Error")
@@ -85,4 +87,25 @@ func getMessages(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(messages); err != nil {
 		panic(err)
 	}
+}
+
+func wsEndpoint(w http.ResponseWriter, r *http.Request) {
+	upgrader.CheckOrigin = func(r *http.Request) bool { return true }
+	serveWs(hub, w, r)
+}
+
+// serveWs handles websocket requests from the peer.
+func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	client := &Client{hub: hub, conn: conn, send: make(chan []byte, 256)}
+	client.hub.register <- client
+
+	// Allow collection of memory referenced by the caller by doing all work in
+	// new goroutines.
+	go client.writePump()
+	go client.readPump()
 }
