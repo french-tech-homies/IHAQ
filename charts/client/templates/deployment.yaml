@@ -27,7 +27,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["-i", "192.168.64.2:31834"]
+          args: ["-i", "api.ihaq.juin.me"]
           ports:
             - name: http
               containerPort: 80
