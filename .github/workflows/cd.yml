@@ -21,6 +21,6 @@ jobs:
           AKS_CLUSTER_NAME: ${{ secrets.AKS_CLUSTER_NAME }}
           AKS_CLUSTER_RG_NAME: ${{ secrets.AKS_CLUSTER_RG_NAME }}
         run: |
-          az aks get-credentials -n $AKS_CLUSTER_NAME -g AKS_CLUSTER_RG_NAME
+          az aks get-credentials -n $AKS_CLUSTER_NAME -g $AKS_CLUSTER_RG_NAME
           kubectl get pods --all-namespaces
           helm list
