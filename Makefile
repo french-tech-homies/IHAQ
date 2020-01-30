@@ -146,7 +146,7 @@ push-mutable-publisher-image: registry-login
 .PHONY: helm-upgrade-publisher
 helm-upgrade-publisher:
 	# Dirty hack to bypass redis auth for demo
-	helm upgrade ihaq-worker charts/api --set image.tag=$(IHAQ_VERSION) --set redis.usePassword=false
+	helm upgrade ihaq-api charts/api --set image.tag=$(IHAQ_VERSION) --set redis.usePassword=false
 
 ###############################################################################
 # WORKER
@@ -175,7 +175,7 @@ push-mutable-worker-image: registry-login
 	docker push $(FTH_REGISTRY)/ihaq-worker:$(MUTABLE_VERSION)
 
 .PHONY: helm-upgrade-worker
-helm-upgrade-client:
+helm-upgrade-worker:
 	helm upgrade ihaq-worker charts/worker --set image.tag=$(IHAQ_VERSION)
 
 ###############################################################################
