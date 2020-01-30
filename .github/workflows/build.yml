@@ -16,5 +16,4 @@ jobs:
     - name: Build Docker image
       run: |
         make build-${{ matrix.image }}-image
-        make registry-login
         make push-mutable-${{ matrix.image }}-image
