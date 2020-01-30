@@ -1,0 +1,38 @@
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  build:
+    name: Releasing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        env: # Or as an environment variable
+          FTH_REGISTRY_PASSWORD: ${{ secrets.FTH_REGISTRY_PASSWORD }}
+          FTH_REGISTRY_USERNAME: ${{ secrets.FTH_REGISTRY_USERNAME }}
+        run: |
+          make build-images
+          make push-push-images
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v1
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v1
+      - name: Get Kubeconfig
+        env: # Or as an environment variable
+          AKS_CLUSTER_NAME: ${{ secrets.AKS_CLUSTER_NAME }}
+          AKS_CLUSTER_RG_NAME: ${{ secrets.AKS_CLUSTER_RG_NAME }}
+        run: |
+          az aks get-credentials -n $AKS_CLUSTER_NAME -g $AKS_CLUSTER_RG_NAME
+          kubectl get pods --all-namespaces
+      - name: Update Charts
+        run: |
+          make helm-upgrade-dev-publisher
+          make helm-upgrade-dev-worker
+          make helm-upgrade-dev-client
+          kubectl get pods --all-namespaces

@@ -9,6 +9,9 @@ image:
   tag: production
   pullPolicy: Always
 
+params:
+  redisSvcName: ihaq-api-redis-master
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
