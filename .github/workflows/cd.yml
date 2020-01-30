@@ -1,7 +1,6 @@
-# on:
-# release:
-#     types: [published]
-on: [pull_request]
+on:
+release:
+    types: [published]
 jobs:
   build:
     name: Releasing
@@ -25,5 +24,7 @@ jobs:
           kubectl get pods --all-namespaces
       - name: Update Charts
         run: |
+          make helm-upgrade-publisher
+          make helm-upgrade-worker
           make helm-upgrade-client
           kubectl get pods --all-namespaces
