@@ -63,7 +63,7 @@ info: info-ihaq
 	@echo
 
 registry-login: registry-login
-	@docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
+	@docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
 
 # Run go fmt against code
 .PHONY: fmt
