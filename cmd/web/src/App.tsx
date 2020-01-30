@@ -8,7 +8,6 @@ import QuestionBar from './QuestionBar';
 import Questions from './Questions';
 import { userService } from './services/users.service';
 import { configService } from './services/config.service';
-import { Leaderboard } from './Leaderboard';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from './store/store';
 import { saveUser } from './store/user';
@@ -29,11 +28,10 @@ export default function App() {
         dispatch(saveUser({ userId }));
       }
     };
-  }, []);
+  }, [dispatch]);
   return (
     <Container>
       <TopBar />
-      <Leaderboard />
       <Questions />
       <QuestionBar />
       <ProTip />
