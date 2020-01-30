@@ -189,3 +189,7 @@ push-client-image: registry-login
 push-mutable-client-image: registry-login
 	docker tag $(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-client:$(MUTABLE_VERSION)
 	docker push $(FTH_REGISTRY)/ihaq-client:$(MUTABLE_VERSION)
+
+.PHONY: helm-upgrade-client
+helm-upgrade-client:
+	helm upgrade ihaq-client charts/client --set image.tag=$(IHAQ_VERSION)

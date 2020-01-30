@@ -23,4 +23,7 @@ jobs:
         run: |
           az aks get-credentials -n $AKS_CLUSTER_NAME -g $AKS_CLUSTER_RG_NAME
           kubectl get pods --all-namespaces
-          helm list
+      - name: Update Charts
+        run: |
+          make helm-upgrade-client
+          kubectl get pods --all-namespaces
