@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -10,6 +10,9 @@ import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Zoom from '@material-ui/core/Zoom';
 import { useSelector } from 'react-redux';
 import { getUser } from './store/user';
+import { Button, Popover } from '@material-ui/core';
+import { Leaderboard } from './Leaderboard';
+import { TableChart } from '@material-ui/icons';
 
 interface Props {
   /**
@@ -63,6 +66,9 @@ const useStyles2 = makeStyles((theme: Theme) =>
   createStyles({
     title: {
       flexGrow: 1
+    },
+    username: {
+      padding: theme.spacing(2)
     }
   })
 );
@@ -70,6 +76,16 @@ const useStyles2 = makeStyles((theme: Theme) =>
 export default function BackToTop(props: Props) {
   const classes = useStyles2();
   const user = useSelector(getUser);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+
+  function handleOpenLeaderboard(event: React.MouseEvent<HTMLButtonElement>) {
+    setAnchorEl(event.currentTarget);
+  }
+
+  function handleClose() {
+    setAnchorEl(null);
+  }
+  const open = Boolean(anchorEl);
   return (
     <React.Fragment>
       <CssBaseline />
@@ -78,7 +94,34 @@ export default function BackToTop(props: Props) {
           <Typography variant="h5" className={classes.title}>
             I Have A Question ?!
           </Typography>
-          <Typography variant="h6">{user.id}</Typography>
+          <Button
+            aria-describedby="leaderboard"
+            variant="contained"
+            color="secondary"
+            onClick={handleOpenLeaderboard}
+            startIcon={<TableChart />}
+          >
+            Open Leaderboard
+          </Button>
+          <Popover
+            id="leaderboard"
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center'
+            }}
+          >
+            <Leaderboard />
+          </Popover>
+          <Typography variant="h6" className={classes.username}>
+            {user.id}
+          </Typography>
         </Toolbar>
       </AppBar>
       <Toolbar id="back-to-top-anchor" />
