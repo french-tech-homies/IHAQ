@@ -1,0 +1,24 @@
+# on:
+# release:
+#     types: [published]
+on: [pull_request]
+jobs:
+  build:
+    name: Releasing
+    runs-on: ubuntu-latest
+    - uses: actions/checkout@v2
+    - name: Azure Login
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Helm tool installer
+      uses: Azure/setup-helm@v1
+    - name: Get Kubeconfig
+      env: # Or as an environment variable
+        AKS_CLUSTER_NAME: ${{ secrets.AKS_CLUSTER_NAME }}
+        AKS_CLUSTER_RG_NAME: ${{ secrets.AKS_CLUSTER_RG_NAME }}
+      run: |
+        az aks install-cli
+        az aks get-crendentials -n $AKS_CLUSTER_NAME -g AKS_CLUSTER_RG_NAME
+        kubectl get pods --all-namespaces
+        helm list

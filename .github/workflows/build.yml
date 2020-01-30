@@ -1,9 +1,8 @@
 name: Build
-# on:
-#   push:
-#     branches:
-#     - master
-on: [pull_request]
+on:
+  push:
+    branches:
+    - master
 jobs:
   build:
     name: Building ${{ matrix.image }}
@@ -20,18 +19,3 @@ jobs:
       run: |
         make build-${{ matrix.image }}-image
         make push-mutable-${{ matrix.image }}-image
-    - name: Azure Login
-      uses: Azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - name: Helm tool installer
-      uses: Azure/setup-helm@v1
-    - name: Get Kubeconfig
-      env: # Or as an environment variable
-        AKS_CLUSTER_NAME: ${{ secrets.AKS_CLUSTER_NAME }}
-        AKS_CLUSTER_RG_NAME: ${{ secrets.AKS_CLUSTER_RG_NAME }}
-      run: |
-        az aks install-cli
-        az aks get-crendentials -n $AKS_CLUSTER_NAME -g AKS_CLUSTER_RG_NAME
-        kubectl get pods --all-namespaces
-        helm list
