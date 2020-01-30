@@ -15,13 +15,13 @@ function LightBulbIcon(props: SvgIconProps) {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
-      margin: theme.spacing(6, 0, 3),
+      margin: theme.spacing(6, 0, 3)
     },
     lightBulb: {
       verticalAlign: 'middle',
-      marginRight: theme.spacing(1),
-    },
-  }),
+      marginRight: theme.spacing(1)
+    }
+  })
 );
 
 export default function ProTip() {
@@ -29,9 +29,7 @@ export default function ProTip() {
   return (
     <Typography className={classes.root} color="textSecondary">
       <LightBulbIcon className={classes.lightBulb} />
-      See more on {' '}
-      <Link href="https://github.com/frenchtechhomies">Github</Link> about the
-      French Tech Homies.
+      See more on <Link href="https://github.com/french-tech-homies">Github</Link> about the French Tech Homies.
     </Typography>
   );
 }

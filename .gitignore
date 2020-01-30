@@ -2,3 +2,5 @@ node_modules
 bin
 ihaq-*
 .env
+.DS_Store
+env.js

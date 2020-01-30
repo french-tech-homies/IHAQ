@@ -59,6 +59,31 @@ func postMessage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func postLike(w http.ResponseWriter, r *http.Request) {
+	var payload LikePayload
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+	if err := json.Unmarshal(body, &payload); err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(422) // unprocessable entity
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+	}
+	log.Printf("Adding a like to message %+v", payload)
+	result := client.Publish("likes", payload)
+	if result.Err() != nil {
+		panic(result.Err())
+	}
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusCreated)
+}
+
 func getMessages(w http.ResponseWriter, r *http.Request) {
 	keysResult, err := client.Keys("*").Result()
 	if err != nil {
