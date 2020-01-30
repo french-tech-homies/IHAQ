@@ -173,7 +173,7 @@ push-mutable-worker-image: registry-login
 
 .PHONY: build-client-binaries
 build-client-binaries:
-	cd cmd/web && yarn build
+	cd cmd/web && yarn install && yarn build
 
 .PHONY: build-client-image
 build-client-image:
