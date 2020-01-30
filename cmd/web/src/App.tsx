@@ -23,7 +23,7 @@ export default function App() {
   return (
     <Container>
       <TopBar />
-      <Leaderboard />
+      {/* <Leaderboard /> */}
       <Questions />
       <QuestionBar />
       <ProTip />
