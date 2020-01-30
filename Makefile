@@ -171,6 +171,10 @@ push-mutable-worker-image: registry-login
 # CLIENT
 ###############################################################################
 
+.PHONY: build-client-binaries
+build-client-binaries:
+	cd cmd/web && yarn build
+
 .PHONY: build-client-image
 build-client-image:
 	docker build -f images/client/Dockerfile -t $(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION) cmd/web

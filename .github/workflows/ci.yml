@@ -8,13 +8,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        image: ['client','worker','publisher']
+        image: ["worker", "publisher"]
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Go	
-      uses: actions/setup-go@v1	
-      with:	
-        go-version: 1.13
-    - name: Build image
-      run: |
-        make build-${{ matrix.image }}-binaries
+      - uses: actions/checkout@v2
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13
+        if: ${{ matrix.image }} != 'client'
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "10.x"
+        if: ${{ matrix.image }} == 'client'
+      - name: Build image
+        run: |
+          make build-${{ matrix.image }}-binaries
