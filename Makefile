@@ -148,6 +148,12 @@ helm-upgrade-publisher:
 	# Dirty hack to bypass redis auth for demo
 	helm upgrade ihaq-api charts/api --set image.tag=$(IHAQ_VERSION) --set redis.usePassword=false
 
+# Yea.... this can be combined with helm-upgrade-client ! Rush hour !
+.PHONY: helm-upgrade-dev-publisher
+helm-upgrade-dev-publisher:
+	# Well presentation is tonight... hardcoding values but needs to be cleaned !
+	helm upgrade ihaq-dev-api charts/api --set image.tag=$(IHAQ_VERSION) --set redis.usePassword=false --set params.redisSvcName=ihaq-dev-api-redis-master
+
 ###############################################################################
 # WORKER
 ###############################################################################
@@ -178,6 +184,12 @@ push-mutable-worker-image: registry-login
 helm-upgrade-worker:
 	helm upgrade ihaq-worker charts/worker --set image.tag=$(IHAQ_VERSION)
 
+# Yea.... this can be combined with helm-upgrade-client ! Rush hour !
+.PHONY: helm-upgrade-dev-worker
+helm-upgrade-dev-worker:
+	# Well presentation is tonight... hardcoding values but needs to be cleaned !
+	helm upgrade ihaq-dev-worker charts/worker --set image.tag=$(IHAQ_VERSION) --set params.redisSvcName=ihaq-dev-api-redis-master
+
 ###############################################################################
 # CLIENT
 ###############################################################################
@@ -202,3 +214,9 @@ push-mutable-client-image: registry-login
 .PHONY: helm-upgrade-client
 helm-upgrade-client:
 	helm upgrade ihaq-client charts/client --set image.tag=$(IHAQ_VERSION)
+
+# Yea.... this can be combined with helm-upgrade-client ! Rush hour !
+.PHONY: helm-upgrade-dev-client
+helm-upgrade-dev-client:
+	# Well presentation is tonight... hardcoding values but needs to be cleaned !
+	helm upgrade ihaq-dev-client charts/client --set image.tag=$(IHAQ_VERSION) --set params.apiUrl=dev.api.ihaq.juin.me

@@ -10,7 +10,7 @@ image:
   pullPolicy: Always
 
 params:
-  API_SVC: publisher-svc
+  apiUrl: api.ihaq.juin.me
 
 imagePullSecrets: []
 nameOverride: ""
