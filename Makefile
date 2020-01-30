@@ -63,6 +63,8 @@ info: info-ihaq
 	@echo
 
 registry-login: registry-login
+	@echo ${FTH_REGISTRY_USERNAME}
+	@echo ${FTH_REGISTRY_PASSWORD}
 	@docker login -u ${FTH_REGISTRY_USERNAME} -p ${FTH_REGISTRY_PASSWORD}
 
 # Run go fmt against code
@@ -128,7 +130,7 @@ build-publisher-binaries-with-container:
 	$(DEV_ENV_CMD) make build-publisher-binaries
 
 .PHONY: build-publisher-image
-build-publisher-image: build-base-ubuntu-image
+build-publisher-image: build-base-ubuntu-image build-publisher-binaries
 	cp bin/ihaq-publisher images/publisher/ihaq-publisher
 	docker build -t $(FTH_REGISTRY)/ihaq-publisher:$(IHAQ_VERSION) images/publisher
 
@@ -154,7 +156,7 @@ build-worker-binaries-with-container:
 	$(DEV_ENV_CMD) make build-worker-binaries
 
 .PHONY: build-worker-image
-build-worker-image: build-base-ubuntu-image
+build-worker-image: build-base-ubuntu-image build-worker-binaries
 	cp bin/ihaq-worker images/worker/ihaq-worker
 	docker build -t $(FTH_REGISTRY)/ihaq-worker:$(IHAQ_VERSION) images/worker
 
@@ -170,6 +172,10 @@ push-mutable-worker-image: registry-login
 ###############################################################################
 # CLIENT
 ###############################################################################
+
+.PHONY: build-client-binaries
+build-client-binaries:
+	cd cmd/web && yarn install && yarn build
 
 .PHONY: build-client-image
 build-client-image:
