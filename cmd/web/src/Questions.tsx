@@ -16,6 +16,7 @@ import { socket } from './App';
 // @ts-ignore
 import { Rings as Identicon } from 'react-identicon-variety-pack';
 import { Button, Grid } from '@material-ui/core';
+import { getUser } from './store/user';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -32,6 +33,8 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function AlignItemsList() {
   const classes = useStyles();
   const dispatch = useDispatch<AppDispatch>();
+  const user = useSelector(getUser);
+
   // Messages is updated everytime the store is updated
   const messages = useSelector(getMessagesWithUser);
   useEffect(() => {
@@ -63,6 +66,7 @@ export default function AlignItemsList() {
                     authorName={item.author.name}
                     likes={item.message.likes}
                     onLike={() => dispatch(likeMessage(item.message.id))}
+                    disableLikeButton={item.author.id === user.id}
                   />
                 </Grid>
               </Grid>
@@ -77,15 +81,16 @@ interface MessageSubtextProps {
   likes: number;
   authorName: string;
   onLike: () => void;
+  disableLikeButton: boolean;
 }
-const MessageSubtext: FC<MessageSubtextProps> = ({ authorName, likes, onLike }) => {
+const MessageSubtext: FC<MessageSubtextProps> = ({ authorName, likes, onLike, disableLikeButton }) => {
   return (
     <Grid container alignItems="center" justify="flex-start">
       <Grid item>
         <Typography variant="body2">- by {authorName}</Typography>
       </Grid>
       <Grid item>
-        <Button variant="text" color="default" onClick={onLike} startIcon={<FavoriteBorder />}>
+        <Button variant="text" color="default" onClick={onLike} startIcon={<FavoriteBorder />} disabled={disableLikeButton}>
           {likes}
         </Button>
       </Grid>

@@ -20,3 +20,17 @@ spec:
             backend:
               serviceName: ihaq-client
               servicePort: http
+    - host: dev.api.ihaq.juin.me
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ihaq-dev-api
+              servicePort: 8080
+    - host: dev.ihaq.juin.me
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ihaq-dev-client
+              servicePort: http
