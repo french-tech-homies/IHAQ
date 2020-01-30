@@ -143,6 +143,11 @@ push-mutable-publisher-image: registry-login
 	docker tag $(FTH_REGISTRY)/ihaq-publisher:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-publisher:$(MUTABLE_VERSION)
 	docker push $(FTH_REGISTRY)/ihaq-publisher:$(MUTABLE_VERSION)
 
+.PHONY: helm-upgrade-publisher
+helm-upgrade-publisher:
+	# Dirty hack to bypass redis auth for demo
+	helm upgrade ihaq-worker charts/api --set image.tag=$(IHAQ_VERSION) --set redis.usePassword=false
+
 ###############################################################################
 # WORKER
 ###############################################################################
@@ -169,6 +174,10 @@ push-mutable-worker-image: registry-login
 	docker tag $(FTH_REGISTRY)/ihaq-worker:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-worker:$(MUTABLE_VERSION)
 	docker push $(FTH_REGISTRY)/ihaq-worker:$(MUTABLE_VERSION)
 
+.PHONY: helm-upgrade-worker
+helm-upgrade-client:
+	helm upgrade ihaq-worker charts/worker --set image.tag=$(IHAQ_VERSION)
+
 ###############################################################################
 # CLIENT
 ###############################################################################
@@ -189,3 +198,7 @@ push-client-image: registry-login
 push-mutable-client-image: registry-login
 	docker tag $(FTH_REGISTRY)/ihaq-client:$(IHAQ_VERSION) $(FTH_REGISTRY)/ihaq-client:$(MUTABLE_VERSION)
 	docker push $(FTH_REGISTRY)/ihaq-client:$(MUTABLE_VERSION)
+
+.PHONY: helm-upgrade-client
+helm-upgrade-client:
+	helm upgrade ihaq-client charts/client --set image.tag=$(IHAQ_VERSION)

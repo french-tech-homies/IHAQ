@@ -1,0 +1,30 @@
+on:
+    release:
+        types: [published]
+jobs:
+  build:
+    name: Releasing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Helm tool installer
+        uses: Azure/setup-helm@v1
+      - name: Kubectl tool installer
+        uses: Azure/setup-kubectl@v1
+      - name: Get Kubeconfig
+        env: # Or as an environment variable
+          AKS_CLUSTER_NAME: ${{ secrets.AKS_CLUSTER_NAME }}
+          AKS_CLUSTER_RG_NAME: ${{ secrets.AKS_CLUSTER_RG_NAME }}
+        run: |
+          az aks get-credentials -n $AKS_CLUSTER_NAME -g $AKS_CLUSTER_RG_NAME
+          kubectl get pods --all-namespaces
+      - name: Update Charts
+        run: |
+          make helm-upgrade-publisher
+          make helm-upgrade-worker
+          make helm-upgrade-client
+          kubectl get pods --all-namespaces
