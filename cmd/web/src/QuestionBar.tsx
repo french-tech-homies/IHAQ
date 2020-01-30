@@ -1,4 +1,4 @@
-import React, {useState, FormEvent} from 'react';
+import React, { useState, FormEvent } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
@@ -9,11 +9,11 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from './store/store';
 import { postMessage } from './store/messages';
 
-import {userService} from './services/users.service'
+import { userService } from './services/users.service';
 
 interface IQuestion {
-    message: string;
-    author: string;
+  message: string;
+  author: string;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -24,52 +24,51 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     marginLeft: theme.spacing(1),
-    flex: 1,
+    flex: 1
   },
   iconButton: {
-    padding: 10,
+    padding: 10
   },
   divider: {
     height: 28,
-    margin: 4,
-  },
+    margin: 4
+  }
 }));
 
 export default function CustomizedInputBase() {
   const classes = useStyles();
-  const initialState = {author:userService.getUsername(), message:""}
+  const initialState = { author: userService.getUsername(), message: '' };
   const [question, setQuestion] = useState<IQuestion>(initialState);
 
   const dispatch = useDispatch<AppDispatch>();
 
   const handleChange = (event: any) => {
-    const theQuestion : IQuestion = {author:userService.getUsername(), message:event.target.value}
-    setQuestion(theQuestion)
-  }
+    const theQuestion: IQuestion = { author: userService.getUsername(), message: event.target.value };
+    setQuestion(theQuestion);
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log("Clicked")
-    console.log("msg: ", question)
-    dispatch(postMessage({text:question.message, authorId:question.author, id:"", timestamp:Date.now()}))
-    setQuestion(initialState)
-  }
-
+    console.log('Clicked');
+    console.log('msg: ', question);
+    dispatch(postMessage({ text: question.message, authorId: question.author, id: '', timestamp: Date.now(), likes: 0 }));
+    setQuestion(initialState);
+  };
 
   return (
     <form onSubmit={handleSubmit}>
-    <Paper className={classes.root}>
-      <InputBase
-        className={classes.input}
-        placeholder="Send Question"
-        inputProps={{ 'aria-label': 'send question' }}
-        onChange={handleChange}
-        value={question?.message}
-      />
-      <IconButton className={classes.iconButton} aria-label="send" type="submit">
-        <SendIcon />
-      </IconButton>
-    </Paper>
+      <Paper className={classes.root}>
+        <InputBase
+          className={classes.input}
+          placeholder="Send Question"
+          inputProps={{ 'aria-label': 'send question' }}
+          onChange={handleChange}
+          value={question?.message}
+        />
+        <IconButton className={classes.iconButton} aria-label="send" type="submit">
+          <SendIcon />
+        </IconButton>
+      </Paper>
     </form>
   );
 }

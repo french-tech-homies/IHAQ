@@ -1,7 +1,7 @@
-import axios, { AxiosInstance } from "axios";
-import { configService } from "./config.service";
+import axios, { AxiosInstance } from 'axios';
+import { configService } from './config.service';
 
-const API_URL = "http://" + configService.API_URL;
+const API_URL = 'http://' + configService.API_URL;
 
 export interface IMessage {
   id: string;
@@ -17,7 +17,7 @@ export class MessageService {
     this.client = axios.create({ baseURL: API_URL });
   }
   async getMessages() {
-    const { data } = await this.client.get<IMessage[]>("/messages");
+    const { data } = await this.client.get<IMessage[]>('/messages');
     if (data) {
       return data;
     }
@@ -25,7 +25,12 @@ export class MessageService {
   }
 
   async postMessage(message: IMessage) {
-    const { data } = await this.client.post<IMessage>("/message", message);
+    const { data } = await this.client.post<IMessage>('/message', message);
+    return data;
+  }
+
+  async sendLike(messageId: string) {
+    const { data } = await this.client.post('/like', { messageId });
     return data;
   }
 }

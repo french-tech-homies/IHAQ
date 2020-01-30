@@ -17,20 +17,23 @@ const authorsSlice = createSlice({
   reducers: {
     addAuthor(state, action: PayloadAction<Author>) {
       const author = action.payload;
-      if (!state.byId[author.id]) {
-        state.allIds.push(author.id);
-        state.byId[author.id] = author;
-      }
+      _addAuthor(state, author);
     },
     addAuthors(state, action: PayloadAction<Author[]>) {
       const authors = action.payload;
       authors.forEach(author => {
-        state.byId[author.id] = author;
-        state.allIds.push(author.id);
+        _addAuthor(state, author);
       });
     }
   }
 });
+
+function _addAuthor(state: AuthorsState, author: Author) {
+  if (!state.byId[author.id]) {
+    state.allIds.push(author.id);
+    state.byId[author.id] = author;
+  }
+}
 
 export const { addAuthor, addAuthors } = authorsSlice.actions;
 export const authors = authorsSlice.reducer;
