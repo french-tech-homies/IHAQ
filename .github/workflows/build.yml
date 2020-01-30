@@ -13,7 +13,7 @@ jobs:
         image: ['worker','publisher','client']
     steps:
     - uses: actions/checkout@v2
-    - name: Run a multi-line script
+    - name: Build Docker image
       run: |
         make build-${{ matrix.image }}-image
         make registry-login
