@@ -1,0 +1,22 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    name: Building ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ["worker", "publisher", "client"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build Docker image
+        env: # Or as an environment variable
+          FTH_REGISTRY_PASSWORD: ${{ secrets.FTH_REGISTRY_PASSWORD }}
+          FTH_REGISTRY_USERNAME: ${{ secrets.FTH_REGISTRY_USERNAME }}
+        run: |
+          make build-${{ matrix.image }}-image
+          make push-${{ matrix.image }}-image
+          make push-mutable-${{ matrix.image }}-image

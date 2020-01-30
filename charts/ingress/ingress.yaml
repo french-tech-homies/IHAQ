@@ -1,0 +1,22 @@
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: api.ihaq.juin.me
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ihaq-api
+              servicePort: 8080
+    - host: ihaq.juin.me
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ihaq-client
+              servicePort: http

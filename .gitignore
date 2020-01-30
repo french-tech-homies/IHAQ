@@ -4,3 +4,8 @@ ihaq-*
 .env
 .DS_Store
 env.js
+spn.json
+**.pub
+juihaq
+sshkey
+id_rsa
