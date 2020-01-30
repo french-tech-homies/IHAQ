@@ -13,9 +13,17 @@ type Message struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
+type LikePayload struct {
+	MessageID string `json:"messageId"`
+}
+
 // Messages is an array of Message
 type Messages []Message
 
 func (msg Message) MarshalBinary() ([]byte, error) {
+	return json.Marshal(msg)
+}
+
+func (msg LikePayload) MarshalBinary() ([]byte, error) {
 	return json.Marshal(msg)
 }

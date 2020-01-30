@@ -64,4 +64,10 @@ var routes = Routes{
 		"/ws",
 		wsEndpoint,
 	},
+	Route{
+		"postlike",
+		"POST",
+		"/like",
+		postLike,
+	},
 }

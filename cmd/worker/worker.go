@@ -42,18 +42,38 @@ func main() {
 	}
 	fmt.Println(pong)
 
-	sub := client.Subscribe("message")
+	sub := client.Subscribe("message", "likes")
 
 	ch := sub.Channel()
 	for msg := range ch {
-		fmt.Printf("Message received on channel %s\n", msg.Channel)
-		var data Message
-		json.Unmarshal([]byte(msg.Payload), &data)
-		client.Set(data.Id, msg.Payload, 0)
-		val, err := client.Get(data.Id).Result()
-		if err != nil {
-			panic(err)
+		if msg.Channel == "message" {
+			fmt.Printf("Message received on channel %s\n", msg.Channel)
+			var data Message
+			json.Unmarshal([]byte(msg.Payload), &data)
+			client.Set(data.Id, msg.Payload, 0)
+			val, err := client.Get(data.Id).Result()
+			if err != nil {
+				panic(err)
+			}
+			fmt.Printf("Message stored : %s\n", val)
+		} else if msg.Channel == "likes" {
+			var payload LikePayload
+			json.Unmarshal([]byte(msg.Payload), &payload)
+			record, err := client.Get(payload.MessageID).Result()
+			if err != nil {
+				panic(err)
+			}
+			var message Message
+			json.Unmarshal([]byte(record), &message)
+			message.Likes = message.Likes + 1
+			result := client.Set(message.Id, message, 0)
+
+			if result.Err() != nil {
+				panic(fmt.Errorf("Unable to add like to: %s", message.Id))
+			}
+			fmt.Printf("Added like to message : %s\n", message.Id)
+
 		}
-		fmt.Printf("Message stored : %s\n", val)
+
 	}
 }
