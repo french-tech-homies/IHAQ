@@ -18,7 +18,5 @@ jobs:
         FTH_REGISTRY_PASSWORD: ${{ secrets.FTH_REGISTRY_PASSWORD }}
         FTH_REGISTRY_USERNAME: ${{ secrets.FTH_REGISTRY_USERNAME }}
       run: |
-        echo $FTH_REGISTRY_USERNAME
-        echo $FTH_REGISTRY_PASSWORD
         make build-${{ matrix.image }}-image
         make push-mutable-${{ matrix.image }}-image
