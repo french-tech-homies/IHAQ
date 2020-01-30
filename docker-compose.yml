@@ -1,24 +1,27 @@
-version: '3'
+version: "3"
 services:
   web:
-    build: images/client
+    build:
+      context: ./cmd/web
+      dockerfile: ../../images/client/Dockerfile
     ports:
-    - "12345:3000"
+      - "12345:80"
     volumes:
-    - ./cmd/web:/ihaq-client
+      - ./cmd/web:/ihaq-client
     links:
-    - redis
+      - redis
+    command: -i localhost:8080
   api:
     build: images/publisher
     ports:
-    - "8080:8080"
+      - "8080:8080"
     links:
-    - redis
-    command: /ihaq-publisher --redis-server-name=redis
-  worker:
-      build: images/worker
-      links:
       - redis
-      command: /ihaq-worker --redis-server-name=redis
+    command: --redis-server-name=redis
+  worker:
+    build: images/worker
+    links:
+      - redis
+    command: --redis-server-name=redis
   redis:
     image: redis

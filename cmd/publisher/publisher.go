@@ -39,6 +39,8 @@ func main() {
 		DB:       redisServerDB,       // use default DB
 	})
 
+	log.Printf("Starting publisher app - Redis Addr {%s} - Password {%s} - DB {%d}", redisServerName+":"+redisServerPort, redisServerPassword, redisServerDB)
+
 	pong, err := client.Ping().Result()
 	if err != nil {
 		fmt.Println(err)

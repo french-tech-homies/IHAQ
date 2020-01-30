@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 
 	. "github.com/french-tech-homies/ihaq/pkg/message"
 
@@ -31,6 +32,8 @@ func main() {
 		Password: redisServerPassword, // no password set
 		DB:       redisServerDB,       // use default DB
 	})
+
+	log.Printf("Starting worker app - Redis Addr {%s} - Password {%s} - DB {%d}", redisServerName+":"+redisServerPort, redisServerPassword, redisServerDB)
 
 	pong, err := client.Ping().Result()
 	if err != nil {

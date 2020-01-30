@@ -124,7 +124,7 @@ build-publisher-binaries:
 	go build $(GO_BUILD_OPTIONS) -o $(BINARY_DEST_DIR)/ihaq-publisher $(IHAQ_GOPATH)/cmd/publisher
 
 .PHONY: build-publisher-binaries-with-container
-build-publisher-binaries-with-container: 
+build-publisher-binaries-with-container:
 	$(DEV_ENV_CMD) make build-publisher-binaries
 
 .PHONY: build-publisher-image
@@ -146,16 +146,16 @@ push-mutable-publisher-image: registry-login
 ###############################################################################
 
 .PHONY: build-worker-binaries
-build-worker-binaries: 
+build-worker-binaries:
 	go build $(GO_BUILD_OPTIONS) -o $(BINARY_DEST_DIR)/ihaq-worker $(IHAQ_GOPATH)/cmd/worker
 
 .PHONY: build-worker-binaries-with-container
-build-worker-binaries-with-container: 
+build-worker-binaries-with-container:
 	$(DEV_ENV_CMD) make build-worker-binaries
 
 .PHONY: build-worker-image
 build-worker-image: build-base-ubuntu-image
-	cp bin/ihaq-publisher images/worker/ihaq-worker
+	cp bin/ihaq-worker images/worker/ihaq-worker
 	docker build -t $(FTH_REGISTRY)/ihaq-worker:$(IHAQ_VERSION) images/worker
 
 .PHONY: push-worker-image
