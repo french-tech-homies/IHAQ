@@ -24,10 +24,9 @@ export const getAuthorsWithScore = createSelector(
     const min = Math.min(...allLikes);
     const max = Math.max(...allLikes);
     const scale = scalePow()
-      .exponent(0.45)
+      .exponent(0.2)
       .domain([min, max])
       .range([1, 10]);
-    console.log('allLikes', allLikes);
     return Object.values(state.byId).map(author => {
       const messages = getAuthorMessages(author.id);
       const countOfMessages = messages.length;
@@ -35,10 +34,9 @@ export const getAuthorsWithScore = createSelector(
         acc += message.likes;
         return acc;
       }, 0);
-      console.log('coeff scaled', scale(countOfLikes));
       return {
         author,
-        score: (countOfLikes + 1) * countOfMessages
+        score: Math.floor(scale(countOfLikes) * countOfMessages)
       };
     });
   }
