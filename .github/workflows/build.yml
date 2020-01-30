@@ -1,0 +1,20 @@
+name: Build
+on: [pull_request]
+# on:
+#   push:
+#     branches:
+#     - master
+jobs:
+  build:
+    name: Building ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ['worker','publisher','client']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run a multi-line script
+      run: |
+        make build-${{ matrix.image }}-image
+        make registry-login
+        make push-mutable-${{ matrix.image }}-image
