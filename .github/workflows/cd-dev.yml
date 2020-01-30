@@ -1,12 +1,20 @@
 on:
-    release:
-        types: [published]
+  push:
+    branches:
+      - dev
 jobs:
   build:
     name: Releasing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Build Docker image
+        env: # Or as an environment variable
+          FTH_REGISTRY_PASSWORD: ${{ secrets.FTH_REGISTRY_PASSWORD }}
+          FTH_REGISTRY_USERNAME: ${{ secrets.FTH_REGISTRY_USERNAME }}
+        run: |
+          make build-images
+          make push-images
       - name: Azure Login
         uses: Azure/login@v1
         with:
@@ -24,8 +32,8 @@ jobs:
           kubectl get pods --all-namespaces
       - name: Update Charts
         run: |
-          make helm-upgrade-publisher
-          make helm-upgrade-worker
-          make helm-upgrade-client
+          make helm-upgrade-dev-publisher
+          make helm-upgrade-dev-worker
+          make helm-upgrade-dev-client
           kubectl get pods --all-namespaces
           kubectl apply -f charts/ingress/ingress.yaml

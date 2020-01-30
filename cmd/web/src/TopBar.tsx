@@ -8,6 +8,8 @@ import useScrollTrigger from '@material-ui/core/useScrollTrigger';
 import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import Zoom from '@material-ui/core/Zoom';
+import { useSelector } from 'react-redux';
+import { getUser } from './store/user';
 
 interface Props {
   /**
@@ -23,9 +25,9 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       position: 'fixed',
       bottom: theme.spacing(2),
-      right: theme.spacing(2),
-    },
-  }),
+      right: theme.spacing(2)
+    }
+  })
 );
 
 function ScrollTop(props: Props) {
@@ -37,13 +39,11 @@ function ScrollTop(props: Props) {
   const trigger = useScrollTrigger({
     target: window ? window() : undefined,
     disableHysteresis: true,
-    threshold: 100,
+    threshold: 100
   });
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const anchor = ((event.target as HTMLDivElement).ownerDocument || document).querySelector(
-      '#back-to-top-anchor',
-    );
+    const anchor = ((event.target as HTMLDivElement).ownerDocument || document).querySelector('#back-to-top-anchor');
 
     if (anchor) {
       anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -59,13 +59,26 @@ function ScrollTop(props: Props) {
   );
 }
 
+const useStyles2 = makeStyles((theme: Theme) =>
+  createStyles({
+    title: {
+      flexGrow: 1
+    }
+  })
+);
+
 export default function BackToTop(props: Props) {
+  const classes = useStyles2();
+  const user = useSelector(getUser);
   return (
     <React.Fragment>
       <CssBaseline />
       <AppBar>
         <Toolbar>
-          <Typography variant="h5">I Have A Question ?!</Typography>
+          <Typography variant="h5" className={classes.title}>
+            I Have A Question ?!
+          </Typography>
+          <Typography variant="h6">{user.id}</Typography>
         </Toolbar>
       </AppBar>
       <Toolbar id="back-to-top-anchor" />
