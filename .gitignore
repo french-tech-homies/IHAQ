@@ -3,3 +3,7 @@ bin
 ihaq-*
 .env
 spn.json
+**.pub
+juihaq
+sshkey
+id_rsa
