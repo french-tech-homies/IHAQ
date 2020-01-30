@@ -28,3 +28,4 @@ jobs:
           make helm-upgrade-worker
           make helm-upgrade-client
           kubectl get pods --all-namespaces
+          kubectl apply -f charts/ingress/ingress.yaml

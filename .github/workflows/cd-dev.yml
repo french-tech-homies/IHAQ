@@ -14,7 +14,7 @@ jobs:
           FTH_REGISTRY_USERNAME: ${{ secrets.FTH_REGISTRY_USERNAME }}
         run: |
           make build-images
-          make push-push-images
+          make push-images
       - name: Azure Login
         uses: Azure/login@v1
         with:
@@ -36,3 +36,4 @@ jobs:
           make helm-upgrade-dev-worker
           make helm-upgrade-dev-client
           kubectl get pods --all-namespaces
+          kubectl apply -f charts/ingress/ingress.yaml
