@@ -1,0 +1,19 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  build:
+    name: Building ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ['client','worker','publisher']
+    steps:
+    - uses: actions/checkout@v2
+    - name: Go Action
+      uses: actions-contrib/go@v0.1.0
+    - name: Build image
+      run: |
+        make build-base-ubuntu-image
+        make build-${{ matrix.image }}-image
