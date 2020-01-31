@@ -29,11 +29,10 @@ export default function App() {
         dispatch(saveUser({ userId }));
       }
     };
-  }, []);
+  }, [dispatch]);
   return (
     <Container>
       <TopBar />
-      {/* <Leaderboard /> */}
       <Questions />
       <QuestionBar />
       <ProTip />
