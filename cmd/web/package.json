@@ -12,7 +12,7 @@
     "@types/js-cookie": "^2.2.4",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
-    "axios": "^0.19.0",
+    "axios": "^0.21.2",
     "d3-scale": "^3.2.1",
     "date-fns": "^2.9.0",
     "js-cookie": "^2.2.1",
